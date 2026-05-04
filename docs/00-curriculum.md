@@ -344,7 +344,7 @@ Con ese paquete, estás listo para:
 
 Si quieres contrastar el alcance del curso con otros materiales, o profundizar en un tema concreto:
 
-- **Python Documentation** — [docs.python.org/3/](https://docs.python.org/3/). Referencia canónica del lenguaje. Aprendé a leerla.
+- **Python Documentation** — [docs.python.org/3/](https://docs.python.org/3/). Referencia canónica del lenguaje. Aprende a leerla.
 - **Real Python** — [realpython.com](https://realpython.com/). Tutoriales prácticos de calidad sobre Python intermedio y avanzado.
 - **Fluent Python** (Luciano Ramalho, O'Reilly) — referencia para Python idiomático cuando ya tengas los fundamentos.
 - **Python Cookbook** (David Beazley & Brian K. Jones) — recetas prácticas de problemas reales.
