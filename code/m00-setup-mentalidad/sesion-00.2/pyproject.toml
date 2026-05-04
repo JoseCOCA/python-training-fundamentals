@@ -1,0 +1,6 @@
+[project]
+name = "sesion-00-2"
+version = "0.1.0"
+description = "Primer script del curso — verificación de entorno"
+requires-python = ">=3.12"
+dependencies = []
