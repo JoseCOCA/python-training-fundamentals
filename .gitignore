@@ -1,0 +1,52 @@
+# Entorno
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+build/
+dist/
+
+# uv
+# (uv.lock SÍ se commitea — es el equivalente a pnpm-lock.yaml)
+.uv-cache/
+
+# Datos locales (BBDD, fixtures generados, caches)
+data/
+*.sqlite
+*.db
+.cache/
+postgres_data/
+
+# Excepciones — fixtures de sesiones del curso y catálogo del integrador
+!code/**/data/
+!code/**/data/**
+
+# Logs
+*.log
+logs/
+
+# IDEs y editores
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Salidas de notebooks
+.ipynb_checkpoints/

@@ -1,0 +1,39 @@
+[project]
+name = "python-training-fundamentals"
+version = "0.1.0"
+description = "Fundamentos de Python + Software Engineering para futuros AI Engineers — primer curso de la ruta"
+authors = [{ name = "José Coca" }]
+requires-python = ">=3.12"
+license = { file = "LICENSE" }
+readme = "README.md"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "ruff>=0.6.0",
+    "mypy>=1.11.0",
+    "pytest>=8.3.0",
+]
+
+[tool.uv]
+package = false
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM"]
+
+[tool.mypy]
+python_version = "3.12"
+# Modo gradual: se arranca con `disallow_untyped_defs` (solo exige tipar
+# firmas de funciones) y se sube a `strict = true` en módulos posteriores,
+# cuando el alumno ya peleó con tipos en pydantic y FastAPI.
+disallow_untyped_defs = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
