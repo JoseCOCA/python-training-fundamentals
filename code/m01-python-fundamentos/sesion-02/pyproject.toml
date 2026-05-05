@@ -1,0 +1,6 @@
+[project]
+name = "sesion-02"
+version = "0.1.0"
+description = "Demo de S02 — Control de flujo"
+requires-python = ">=3.12"
+dependencies = []
