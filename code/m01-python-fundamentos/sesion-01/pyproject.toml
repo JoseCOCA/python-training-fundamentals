@@ -1,0 +1,6 @@
+[project]
+name = "sesion-01"
+version = "0.1.0"
+description = "Demo de S01 — Variables, tipos primitivos y expresiones"
+requires-python = ">=3.12"
+dependencies = []
