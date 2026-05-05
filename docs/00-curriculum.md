@@ -317,10 +317,10 @@ code/
 ## 12. Roadmap del repo
 
 - [x] Estructura base + README + curriculum maestro
-- [ ] `01-setup.md` — instalación del entorno (Python via uv, editor, terminal)
-- [ ] Módulo 0 — Setup y mentalidad del programador (2 sesiones)
-- [ ] Módulo 1 — Python fundamentos (5 sesiones) — tag `proyecto-m1`
-- [ ] Módulo 2 — Python intermedio + organización (4 sesiones) — tag `proyecto-m2`
+- [x] `01-setup.md` — instalación del entorno (Python via uv, editor, terminal)
+- [x] Módulo 0 — Setup y mentalidad del programador (2 sesiones)
+- [x] Módulo 1 — Python fundamentos (5 sesiones) — tag `proyecto-m1`
+- [x] Módulo 2 — Python intermedio + organización (4 sesiones) — tag `proyecto-m2`
 - [ ] Módulo 3 — Tipado y calidad de código (2 sesiones) — tag `proyecto-m3`
 - [ ] Módulo 4 — Async, HTTP y persistencia (4 sesiones) — tag `proyecto-m4`
 - [ ] Módulo 5 — Construir una API real con FastAPI (3 sesiones) — tag `proyecto-m5`
