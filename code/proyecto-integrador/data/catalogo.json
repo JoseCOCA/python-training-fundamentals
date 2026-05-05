@@ -1,0 +1,62 @@
+[
+  {
+    "nombre": "Auriculares Bluetooth",
+    "precio": 89.99,
+    "stock": 5,
+    "categoria": "audio"
+  },
+  {
+    "nombre": "Teclado Mecánico",
+    "precio": 49.50,
+    "stock": 12,
+    "categoria": "computación"
+  },
+  {
+    "nombre": "Monitor 4K",
+    "precio": 320.00,
+    "stock": 3,
+    "categoria": "computación"
+  },
+  {
+    "nombre": "Ratón Inalámbrico",
+    "precio": 19.99,
+    "stock": 30,
+    "categoria": "computación"
+  },
+  {
+    "nombre": "Tablet 10\"",
+    "precio": 450.00,
+    "stock": 8,
+    "categoria": "computación"
+  },
+  {
+    "nombre": "Cargador USB-C",
+    "precio": 24.99,
+    "stock": 15,
+    "categoria": "accesorios"
+  },
+  {
+    "nombre": "Cable HDMI 2m",
+    "precio": 12.50,
+    "stock": 0,
+    "categoria": "accesorios"
+  },
+  {
+    "nombre": "Webcam HD",
+    "precio": 79.00,
+    "stock": 0,
+    "categoria": "computación"
+  },
+  {
+    "nombre": "Lámpara de escritorio LED",
+    "precio": 35.50,
+    "stock": 7,
+    "categoria": "oficina"
+  },
+  {
+    "nombre": "Silla ergonómica",
+    "precio": 220.00,
+    "stock": 2,
+    "categoria": "oficina"
+  }
+]
