@@ -18,6 +18,11 @@ dev = [
 [tool.uv]
 package = false
 
+[tool.uv.workspace]
+members = [
+    "code/m02-python-intermedio/sesion-06",
+]
+
 [tool.ruff]
 line-length = 100
 target-version = "py312"
