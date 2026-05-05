@@ -22,6 +22,7 @@ package = false
 members = [
     "code/m02-python-intermedio/sesion-06",
     "code/m02-python-intermedio/sesion-07",
+    "code/m02-python-intermedio/sesion-08",
 ]
 
 [tool.ruff]

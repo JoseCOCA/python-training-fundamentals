@@ -11,6 +11,7 @@ members = [
     "python-training-fundamentals",
     "sesion-06",
     "sesion-07",
+    "sesion-08",
 ]
 
 [[package]]
@@ -250,6 +251,11 @@ source = { virtual = "code/m02-python-intermedio/sesion-06" }
 name = "sesion-07"
 version = "0.1.0"
 source = { virtual = "code/m02-python-intermedio/sesion-07" }
+
+[[package]]
+name = "sesion-08"
+version = "0.1.0"
+source = { virtual = "code/m02-python-intermedio/sesion-08" }
 
 [[package]]
 name = "typing-extensions"
