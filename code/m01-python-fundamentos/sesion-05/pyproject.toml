@@ -1,0 +1,6 @@
+[project]
+name = "sesion-05"
+version = "0.1.0"
+description = "Demo de S05 — Strings y manipulación de texto"
+requires-python = ">=3.12"
+dependencies = []
