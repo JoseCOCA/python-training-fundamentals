@@ -24,6 +24,7 @@ members = [
     "code/m02-python-intermedio/sesion-07",
     "code/m02-python-intermedio/sesion-08",
     "code/m02-python-intermedio/sesion-09",
+    "code/m03-tipado-calidad/sesion-10",
 ]
 
 [tool.ruff]
