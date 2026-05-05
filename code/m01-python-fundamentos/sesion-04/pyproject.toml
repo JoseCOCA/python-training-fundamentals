@@ -1,0 +1,6 @@
+[project]
+name = "sesion-04"
+version = "0.1.0"
+description = "Demo de S04 — Funciones, scope y argumentos"
+requires-python = ">=3.12"
+dependencies = []
