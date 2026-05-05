@@ -1,0 +1,6 @@
+[project]
+name = "sesion-03"
+version = "0.1.0"
+description = "Demo de S03 — Estructuras de datos"
+requires-python = ">=3.12"
+dependencies = []
