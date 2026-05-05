@@ -1,0 +1,6 @@
+[project]
+name = "sesion-09"
+version = "0.1.0"
+description = "Demo de S09 — Decoradores, generadores y context managers"
+requires-python = ">=3.12"
+dependencies = []

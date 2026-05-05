@@ -12,6 +12,7 @@ members = [
     "sesion-06",
     "sesion-07",
     "sesion-08",
+    "sesion-09",
 ]
 
 [[package]]
@@ -256,6 +257,11 @@ source = { virtual = "code/m02-python-intermedio/sesion-07" }
 name = "sesion-08"
 version = "0.1.0"
 source = { virtual = "code/m02-python-intermedio/sesion-08" }
+
+[[package]]
+name = "sesion-09"
+version = "0.1.0"
+source = { virtual = "code/m02-python-intermedio/sesion-09" }
 
 [[package]]
 name = "typing-extensions"
