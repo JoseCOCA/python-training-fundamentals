@@ -21,6 +21,7 @@ package = false
 [tool.uv.workspace]
 members = [
     "code/m02-python-intermedio/sesion-06",
+    "code/m02-python-intermedio/sesion-07",
 ]
 
 [tool.ruff]

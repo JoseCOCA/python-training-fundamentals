@@ -10,6 +10,7 @@ resolution-markers = [
 members = [
     "python-training-fundamentals",
     "sesion-06",
+    "sesion-07",
 ]
 
 [[package]]
@@ -244,6 +245,11 @@ wheels = [
 name = "sesion-06"
 version = "0.1.0"
 source = { virtual = "code/m02-python-intermedio/sesion-06" }
+
+[[package]]
+name = "sesion-07"
+version = "0.1.0"
+source = { virtual = "code/m02-python-intermedio/sesion-07" }
 
 [[package]]
 name = "typing-extensions"

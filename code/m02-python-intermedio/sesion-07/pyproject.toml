@@ -1,0 +1,6 @@
+[project]
+name = "sesion-07"
+version = "0.1.0"
+description = "Demo de S07 — Manejo de errores: try/except, raise, excepciones de dominio"
+requires-python = ">=3.12"
+dependencies = []
