@@ -4,16 +4,19 @@ import json
 from collections.abc import Iterable, Iterator
 from pathlib import Path
 
+from pydantic import ValidationError
+
 from tiendapro.errores import CatalogoInvalido
 from tiendapro.modelos import Producto
 
 
 def cargar(ruta: Path) -> list[Producto]:
-    """Lee el archivo JSON de catálogo y devuelve una lista de Producto.
+    """Lee el JSON y devuelve una lista de Producto validada con pydantic.
 
     Lanza:
         CatalogoInvalido: si el archivo no existe, no es JSON válido o no
-            tiene la estructura esperada.
+            tiene la estructura esperada, o si algún producto no pasa la
+            validación de dominio.
     """
     try:
         with ruta.open(encoding="utf-8") as f:
@@ -24,25 +27,14 @@ def cargar(ruta: Path) -> list[Producto]:
         raise CatalogoInvalido(f"JSON inválido en {ruta}: {e.msg}") from e
 
     if not isinstance(data, list):
-        raise CatalogoInvalido(
-            f"El catálogo debe ser una lista, recibí {type(data).__name__}"
-        )
+        raise CatalogoInvalido(f"El catálogo debe ser una lista, recibí {type(data).__name__}")
 
     productos: list[Producto] = []
     for i, item in enumerate(data):
         try:
-            productos.append(
-                Producto(
-                    nombre=item["nombre"],
-                    categoria=item["categoria"],
-                    precio=float(item["precio"]),
-                    stock=int(item["stock"]),
-                )
-            )
-        except (KeyError, TypeError, ValueError) as e:
-            raise CatalogoInvalido(
-                f"Producto inválido en posición {i}: {e}"
-            ) from e
+            productos.append(Producto.model_validate(item))
+        except ValidationError as e:
+            raise CatalogoInvalido(f"Producto inválido en posición {i}: {e}") from e
 
     return productos
 

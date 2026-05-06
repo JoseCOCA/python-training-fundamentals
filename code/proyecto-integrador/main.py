@@ -1,14 +1,14 @@
-"""TiendaPro Lite — Hito M2.
+"""TiendaPro Lite — Hito M3.
 
 Punto de entrada de la aplicación. Orquesta la carga del catálogo, el
 filtrado, ordenamiento e impresión, y maneja los errores de dominio
 de forma legible para el usuario.
 
-Cambios respecto al hito M1:
-- El código vive en un paquete real (`src/tiendapro/`).
-- Modelos como `@dataclass(frozen=True)` (S08).
-- Excepciones de dominio (S07).
+Stack del hito M3:
+- Modelos como `pydantic.BaseModel` con validators de dominio (S11).
+- Excepciones de dominio (S07) traduciendo `ValidationError`.
 - Carga del JSON con `with` (S09) y `disponibles` como generador (S09).
+- mypy estricto + ruff (linter y formatter) pasan limpio (S10, S11).
 
 Ejecuta con:
 

@@ -13,9 +13,9 @@ from tiendapro.errores import (
 from tiendapro.modelos import Cliente, Producto
 
 __all__ = [
+    "CatalogoInvalido",
     "Cliente",
     "Producto",
-    "CatalogoInvalido",
     "ProductoNoEncontrado",
     "TiendaProError",
 ]

@@ -10,10 +10,7 @@ def imprimir_tabla(productos: Iterable[Producto]) -> None:
     print(f"{'Nombre':<28} {'Categoría':<14} {'Precio':>10} {'Stock':>8}")
     print("-" * 62)
     for p in productos:
-        print(
-            f"{p.nombre:<28} {p.categoria:<14} "
-            f"${p.precio:>9.2f} {p.stock:>8}"
-        )
+        print(f"{p.nombre:<28} {p.categoria:<14} ${p.precio:>9.2f} {p.stock:>8}")
 
 
 def imprimir_resumen(productos: list[Producto]) -> None:
