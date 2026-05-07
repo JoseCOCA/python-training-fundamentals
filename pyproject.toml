@@ -30,6 +30,9 @@ members = [
     "code/m04-async-http-persistencia/sesion-13",
     "code/m04-async-http-persistencia/sesion-14",
     "code/m04-async-http-persistencia/sesion-15",
+    "code/m05-api-fastapi/sesion-16",
+    "code/m05-api-fastapi/sesion-17",
+    "code/m05-api-fastapi/sesion-18",
 ]
 
 [tool.ruff]
