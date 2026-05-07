@@ -3,24 +3,27 @@
 Este módulo encapsula los detalles de SQLAlchemy. El resto del paquete
 no debería tener que importar nada de `sqlalchemy.*` directamente.
 
-URL por default: SQLite local (`tiendapro.db` en la raíz del integrador).
-Para cambiar a Postgres en producción, basta con setear la URL — el resto
-del código no cambia (esa es la promesa del ORM).
+La URL de conexión sale de `Settings.database_url` (S18) — por defecto
+SQLite local; en producción cambia la env var y este módulo no se entera.
 """
 
 from collections.abc import Iterator
 from contextlib import contextmanager
-from pathlib import Path
 
 from sqlalchemy import create_engine
+from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session
 
+from tiendapro.config import get_settings
 from tiendapro.orm import Base
 
-DB_PATH = Path(__file__).resolve().parents[2] / "tiendapro.db"
-URL = f"sqlite:///{DB_PATH}"
 
-_engine = create_engine(URL, echo=False, future=True)
+def _build_engine() -> Engine:
+    settings = get_settings()
+    return create_engine(settings.database_url, echo=False, future=True)
+
+
+_engine: Engine = _build_engine()
 
 
 def crear_schema() -> None:

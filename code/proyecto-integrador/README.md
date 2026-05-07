@@ -6,42 +6,66 @@ Es **el mismo producto** sobre el que arranca el curso 2 ([`python-ai-engineer-t
 
 ---
 
-## Estado actual: hito M4
+## Estado actual: hito M5
 
-A partir del hito M4 TiendaPro Lite **persiste en una base de datos** y **habla HTTP** con un servicio externo:
+Desde el hito M5 TiendaPro Lite **es una API REST funcional**, configurable por entorno y con observabilidad básica:
 
-- **Persistencia con SQLAlchemy v2** (SQLite local en `tiendapro.db`, Postgres-ready: solo cambia la URL).
-- **Modelos ORM** en `src/tiendapro/orm.py` con `DeclarativeBase`, `Mapped[T]` y `mapped_column`.
-- **Modelos pydantic** mantenidos como DTOs de **borde** en `src/tiendapro/modelos.py` (Producto, Cliente, EnriquecimientoExterno).
-- **`src/tiendapro/repositorio.py`** es el ÚNICO módulo que conoce SQLAlchemy. El resto del paquete trabaja con DTOs.
-- **`src/tiendapro/db.py`** encapsula el engine y el `obtener_sesion()` (context manager con commit/rollback automáticos).
-- **Cliente HTTP con `httpx.AsyncClient`** en `src/tiendapro/integraciones.py` que enriquece productos contra una "API externa" (mockeada con `httpx.MockTransport`).
-- **asyncio + semáforo** limitan la concurrencia del enriquecimiento a 5 llamadas en vuelo.
+- **API REST con FastAPI** (`tiendapro.api.app`): CRUD de productos + health check + filtros (`categoria`, `solo_disponibles`).
+- **Tres modelos por entidad**: ORM (`tiendapro.orm`), DTO de dominio (`tiendapro.modelos`) y DTOs de API (`tiendapro.api.dtos`). Cada uno cumple su frontera.
+- **Configuración con `pydantic-settings`** en `tiendapro.config`: lee de env vars y `.env`, con `SecretStr` para `api_key` y `Literal` para `log_level`.
+- **Logging estructurado** en `tiendapro.log`, configurado al startup desde el lifespan.
+- **Middleware HTTP** que inyecta `X-Request-ID` y loguea método/path/status/latencia por request.
+- **Exception handlers globales** que traducen `ProductoNoEncontrado` → 404, `IntegracionError` → 502, `RequestValidationError` → 422 con formato propio, etc. Los handlers quedan **sin `try/except`**.
+- **CORS configurable** por env var (`TIENDAPRO_CORS_ORIGINS`).
 - **mypy estricto** y **ruff** siguen pasando limpio.
 
-Lo que **todavía no tiene** y se agrega en módulos siguientes:
+Lo que **todavía no tiene** y se agrega en M6:
 
 | Módulo | Hito | Capacidades agregadas |
 |--------|------|----------------------|
 | M1 | `proyecto-m1` | Lee JSON, filtra, ordena, imprime |
 | M2 | `proyecto-m2` | Catálogo modelado con dataclasses, errores de dominio, código en paquete |
 | M3 | `proyecto-m3` | Validación pydantic, mypy estricto, ruff + pre-commit |
-| **M4 (aquí estamos)** | `proyecto-m4` | SQLAlchemy v2 + httpx + asyncio donde aporta |
-| M5 | `proyecto-m5` | API REST con FastAPI, validación, configuración |
+| M4 | `proyecto-m4` | SQLAlchemy v2 + httpx + asyncio donde aporta |
+| **M5 (aquí estamos)** | `proyecto-m5` | API REST con FastAPI, pydantic-settings, logging estructurado |
 | M6 | `proyecto-m6` | Tests con pytest, Dockerfile, README final |
 
 ---
 
 ## Cómo correrlo
 
+### Modo CLI (heredado de M4)
+
 Desde dentro de este directorio:
 
 ```bash
-uv sync --all-groups        # solo la primera vez (instala httpx, sqlalchemy, etc.)
+uv sync --all-groups
 uv run python main.py
 ```
 
-La primera ejecución crea `tiendapro.db` y siembra los productos desde `data/catalogo.json`. Las siguientes ejecuciones leen directamente de la DB.
+Imprime la tabla, el resumen y el enriquecimiento mock — útil para verificar que la persistencia y la integración HTTP siguen sanas.
+
+### Modo API (nuevo en M5)
+
+```bash
+cp env.example .env       # opcional — el .env está en .gitignore
+uv run uvicorn tiendapro.api:app --reload --port 8000
+```
+
+Abrí:
+- `http://localhost:8000/docs` — Swagger UI interactivo.
+- `http://localhost:8000/health` — health check.
+- `http://localhost:8000/productos` — listar (acepta `?categoria=...` y `?solo_disponibles=true`).
+
+Probá un POST:
+
+```bash
+curl -X POST http://localhost:8000/productos \
+    -H "Content-Type: application/json" \
+    -d '{"nombre":"Producto API","categoria":"test","precio":9.99,"stock":5}'
+```
+
+Observá los logs del server: cada request loguea método, path, status, latencia y `request_id`. La response trae `X-Request-ID`.
 
 **Para resetear la DB:**
 
@@ -49,38 +73,23 @@ La primera ejecución crea `tiendapro.db` y siembra los productos desde `data/ca
 rm tiendapro.db
 ```
 
-(El archivo está en `.gitignore` por la regla `*.db`.)
+(Está en `.gitignore` por la regla `*.db`.)
 
-## Salida esperada
+## Configuración (variables de entorno)
 
-```
-Productos en DB: 10
+Todas las variables se prefijan con `TIENDAPRO_` y pueden ir en `.env` o ser env vars del sistema.
 
-Nombre                       Categoría          Precio    Stock
---------------------------------------------------------------
-Ratón Inalámbrico            computación    $    19.99       30
-Cargador USB-C               accesorios     $    24.99       15
-Lámpara de escritorio LED    oficina        $    35.50        7
-Teclado Mecánico             computación    $    49.50       12
-Auriculares Bluetooth        audio          $    89.99        5
-Silla ergonómica             oficina        $   220.00        2
-Monitor 4K                   computación    $   320.00        3
-Tablet 10"                   computación    $   450.00        8
+| Variable | Default | Descripción |
+|---|---|---|
+| `TIENDAPRO_APP_NAME` | `TiendaPro` | Nombre del servicio en logs y `/docs` |
+| `TIENDAPRO_DEBUG` | `false` | Flag de debug |
+| `TIENDAPRO_DATABASE_URL` | `sqlite:///tiendapro.db` | URL SQLAlchemy. Postgres-ready |
+| `TIENDAPRO_API_KEY` | `change-me` | Secret (SecretStr) |
+| `TIENDAPRO_LOG_LEVEL` | `INFO` | `DEBUG`/`INFO`/`WARNING`/`ERROR`/`CRITICAL` |
+| `TIENDAPRO_ENABLE_ENRICHMENT` | `true` | Si la app llama a la "API externa" |
+| `TIENDAPRO_CORS_ORIGINS` | `["http://localhost:3000"]` | Lista JSON de orígenes permitidos |
 
-Resumen
---------------------------------------------------------------
-Productos disponibles:    8
-Más barato:               Ratón Inalámbrico ($19.99)
-Más caro:                 Tablet 10" ($450.00)
-Valor total inventario:   $7,267.00
-
-Enriquecimiento (API externa):
-  Teclado Mecánico             ★4.7  Teclado mecánico con switches azules
-  Auriculares Bluetooth        ★4.4  Auriculares con cancelación activa de ruido
-  Monitor 4K                   ★4.5  Monitor 27" 4K UHD con HDR
-```
-
-(Los productos `Cable HDMI 2m` y `Webcam HD` no aparecen — su stock es 0. Solo tres productos vienen enriquecidos por la API mock; los demás se silencian con 404, que en este flujo es esperado.)
+`env.example` está versionado — `.env` no.
 
 ## Verificación de calidad
 
@@ -98,21 +107,29 @@ Los tres son la línea base de cualquier commit.
 proyecto-integrador/
 ├── README.md                       ← este archivo
 ├── pyproject.toml                  ← deps + tool.ruff + tool.mypy
+├── env.example                     ← plantilla de variables (versionada)
 ├── data/
 │   └── catalogo.json               ← seed inicial (se importa una sola vez)
 ├── tiendapro.db                    ← SQLite local (no versionado)
-├── main.py                         ← entry async + bootstrap + enriquecimiento
+├── main.py                         ← entry CLI (compatibilidad con M4)
 └── src/
     └── tiendapro/
         ├── __init__.py             ← re-exports públicos
-        ├── modelos.py              ← DTOs pydantic (Producto, Cliente, Enriquecimiento)
-        ├── errores.py              ← TiendaProError + sub-clases (incluye IntegracionError)
-        ├── orm.py                  ← modelos SQLAlchemy v2 (ProductoORM, ClienteORM, ...)
-        ├── db.py                   ← engine + obtener_sesion() context manager
+        ├── modelos.py              ← DTOs de dominio (pydantic)
+        ├── errores.py              ← TiendaProError + sub-clases
+        ├── orm.py                  ← modelos SQLAlchemy v2 (M4)
+        ├── db.py                   ← engine + obtener_sesion() — usa Settings (M5)
         ├── repositorio.py          ← API de acceso a datos (único módulo con SQLAlchemy)
-        ├── integraciones.py        ← cliente httpx para enriquecimiento
+        ├── integraciones.py        ← cliente httpx para enriquecimiento (M4)
         ├── catalogo.py             ← API que el resto consume; delega en repositorio
-        └── presentacion.py         ← imprimir_tabla, imprimir_resumen
+        ├── presentacion.py         ← imprimir_tabla, imprimir_resumen (modo CLI)
+        ├── config.py               ← Settings(BaseSettings) (M5)
+        ├── log.py                  ← configurar_logging (M5)
+        └── api/                    ← capa API (M5)
+            ├── __init__.py
+            ├── app.py              ← FastAPI(), lifespan, middleware, handlers
+            ├── dtos.py             ← ProductoCrear, ProductoOut, HealthOut
+            └── rutas.py            ← @router.get/post/...
 ```
 
 ## Cómo se construyó
@@ -120,9 +137,10 @@ proyecto-integrador/
 Cada módulo agrega una capa.
 
 - **M1** estableció las bases: leer datos, filtrarlos, ordenarlos, presentarlos.
-- **M2** transformó el script en un paquete real: dataclasses inmutables (S08), excepciones de dominio (S07), `with` y generadores (S09).
+- **M2** transformó el script en un paquete real: dataclasses inmutables, excepciones de dominio, generadores y context managers.
 - **M3** lo blindó con calidad: validación runtime con pydantic, mypy estricto, ruff y pre-commit.
-- **M4 (este hito)** lo conecta con el mundo: persistencia con SQLAlchemy v2, integración HTTP con httpx, asyncio donde de verdad aporta. La separación **DTO pydantic (borde) ↔ ORM SQLAlchemy (DB)** es la pieza arquitectónica clave que vas a usar todo el camino restante.
+- **M4** lo conectó con el mundo: persistencia con SQLAlchemy v2, integración HTTP con httpx, asyncio donde de verdad aporta.
+- **M5 (este hito)** lo expuso como **API REST** con FastAPI: tres modelos por entidad (ORM/dominio/API), configuración por entorno con `pydantic-settings`, logging estructurado con `request_id`, exception handlers que traducen excepciones de dominio a HTTP. La API está lista para que un frontend consuma TiendaPro o para integrarse a una arquitectura más grande.
 
 ## Para los alumnos
 
