@@ -26,6 +26,10 @@ members = [
     "code/m02-python-intermedio/sesion-09",
     "code/m03-tipado-calidad/sesion-10",
     "code/m03-tipado-calidad/sesion-11",
+    "code/m04-async-http-persistencia/sesion-12",
+    "code/m04-async-http-persistencia/sesion-13",
+    "code/m04-async-http-persistencia/sesion-14",
+    "code/m04-async-http-persistencia/sesion-15",
 ]
 
 [tool.ruff]
