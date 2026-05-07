@@ -322,7 +322,7 @@ code/
 - [x] Módulo 1 — Python fundamentos (5 sesiones) — tag `proyecto-m1`
 - [x] Módulo 2 — Python intermedio + organización (4 sesiones) — tag `proyecto-m2`
 - [x] Módulo 3 — Tipado y calidad de código (2 sesiones) — tag `proyecto-m3`
-- [ ] Módulo 4 — Async, HTTP y persistencia (4 sesiones) — tag `proyecto-m4`
+- [x] Módulo 4 — Async, HTTP y persistencia (4 sesiones) — tag `proyecto-m4`
 - [ ] Módulo 5 — Construir una API real con FastAPI (3 sesiones) — tag `proyecto-m5`
 - [ ] Módulo 6 — Herramientas del ingeniero (3 sesiones) — tag `proyecto-m6`
 
