@@ -49,7 +49,7 @@ class Producto(BaseModel):
 
 
 class Cliente(BaseModel):
-    """Placeholder. Se conectará con la base de datos en M4."""
+    """DTO de Cliente (se conecta con `ClienteORM` en repositorio.py)."""
 
     model_config = ConfigDict(frozen=True, extra="forbid")
 
@@ -63,4 +63,26 @@ class Cliente(BaseModel):
         v = v.strip()
         if "@" not in v or "." not in v.split("@")[-1]:
             raise ValueError("formato de email inválido")
+        return v
+
+
+class EnriquecimientoExterno(BaseModel):
+    """Datos extra que vienen de la 'API de catálogo enriquecido'.
+
+    Es el modelo de borde para `tiendapro/integraciones.py`. Cuando llega
+    una respuesta JSON desde la API externa, se valida con este modelo
+    antes de exponerla al resto del paquete.
+    """
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    sku: str
+    descripcion: str
+    rating: float
+
+    @field_validator("rating")
+    @classmethod
+    def rating_en_rango(cls, v: float) -> float:
+        if not 0.0 <= v <= 5.0:
+            raise ValueError("rating debe estar entre 0 y 5")
         return v

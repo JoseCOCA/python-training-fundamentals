@@ -7,14 +7,17 @@ desde sus módulos internos.
 
 from tiendapro.errores import (
     CatalogoInvalido,
+    IntegracionError,
     ProductoNoEncontrado,
     TiendaProError,
 )
-from tiendapro.modelos import Cliente, Producto
+from tiendapro.modelos import Cliente, EnriquecimientoExterno, Producto
 
 __all__ = [
     "CatalogoInvalido",
     "Cliente",
+    "EnriquecimientoExterno",
+    "IntegracionError",
     "Producto",
     "ProductoNoEncontrado",
     "TiendaProError",

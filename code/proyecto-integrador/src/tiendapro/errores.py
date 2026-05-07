@@ -11,3 +11,7 @@ class CatalogoInvalido(TiendaProError):
 
 class ProductoNoEncontrado(TiendaProError):
     """No existe un producto con el identificador buscado."""
+
+
+class IntegracionError(TiendaProError):
+    """Falla al hablar con un servicio externo (HTTP, red, formato)."""

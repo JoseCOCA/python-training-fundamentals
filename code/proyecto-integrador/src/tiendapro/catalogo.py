@@ -1,56 +1,42 @@
-"""Carga, filtrado y ordenamiento del catálogo de productos."""
+"""Catálogo: API que el resto de la app consume.
 
-import json
-from collections.abc import Iterable, Iterator
+Hasta M3 esta capa leía un JSON. A partir del hito M4 delega en
+`repositorio` — los datos viven en SQLite y la primera ejecución de
+la app importa el JSON de seed automáticamente. La firma pública NO
+cambió: `main.py` y `presentacion.py` siguen recibiendo `Producto`
+(DTO pydantic) sin enterarse de que cambió la fuente.
+"""
+
+from collections.abc import Iterable
 from pathlib import Path
 
-from pydantic import ValidationError
-
-from tiendapro.errores import CatalogoInvalido
+from tiendapro import repositorio
 from tiendapro.modelos import Producto
 
 
-def cargar(ruta: Path) -> list[Producto]:
-    """Lee el JSON y devuelve una lista de Producto validada con pydantic.
+def inicializar(seed_json: Path | None = None) -> int:
+    """Bootstrap de la DB. Idempotente."""
+    return repositorio.inicializar(seed_json)
 
-    Lanza:
-        CatalogoInvalido: si el archivo no existe, no es JSON válido o no
-            tiene la estructura esperada, o si algún producto no pasa la
-            validación de dominio.
+
+def cargar() -> list[Producto]:
+    """Devuelve TODOS los productos (incluyendo los con stock 0)."""
+    return repositorio.todos()
+
+
+def disponibles() -> list[Producto]:
+    """Productos con stock > 0, ordenados por precio asc.
+
+    El filtro y el orden se hacen en la DB (SQL: `WHERE stock > 0
+    ORDER BY precio`), no en Python. Eso escala con el catálogo.
     """
-    try:
-        with ruta.open(encoding="utf-8") as f:
-            data = json.load(f)
-    except FileNotFoundError as e:
-        raise CatalogoInvalido(f"Archivo de catálogo no encontrado: {ruta}") from e
-    except json.JSONDecodeError as e:
-        raise CatalogoInvalido(f"JSON inválido en {ruta}: {e.msg}") from e
-
-    if not isinstance(data, list):
-        raise CatalogoInvalido(f"El catálogo debe ser una lista, recibí {type(data).__name__}")
-
-    productos: list[Producto] = []
-    for i, item in enumerate(data):
-        try:
-            productos.append(Producto.model_validate(item))
-        except ValidationError as e:
-            raise CatalogoInvalido(f"Producto inválido en posición {i}: {e}") from e
-
-    return productos
-
-
-def disponibles(productos: Iterable[Producto]) -> Iterator[Producto]:
-    """Generador de productos con stock > 0.
-
-    Lazy: produce uno a la vez. Útil cuando el catálogo crece y se quiere
-    encadenar con otros pasos del pipeline sin materializar listas
-    intermedias.
-    """
-    for p in productos:
-        if p.disponible():
-            yield p
+    return repositorio.disponibles()
 
 
 def ordenar_por_precio(productos: Iterable[Producto]) -> list[Producto]:
-    """Devuelve los productos ordenados por precio ascendente."""
+    """Reordena un iterable ya cargado por precio ascendente.
+
+    Mantiene la firma de M3 para que código que prepara listas en memoria
+    siga funcionando. Para leer ordenado desde la DB, usá `disponibles()`.
+    """
     return sorted(productos, key=lambda p: p.precio)
