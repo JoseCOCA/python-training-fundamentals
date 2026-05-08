@@ -324,7 +324,7 @@ code/
 - [x] Módulo 3 — Tipado y calidad de código (2 sesiones) — tag `proyecto-m3`
 - [x] Módulo 4 — Async, HTTP y persistencia (4 sesiones) — tag `proyecto-m4`
 - [x] Módulo 5 — Construir una API real con FastAPI (3 sesiones) — tag `proyecto-m5`
-- [ ] Módulo 6 — Herramientas del ingeniero (3 sesiones) — tag `proyecto-m6`
+- [x] Módulo 6 — Herramientas del ingeniero (3 sesiones) — tag `proyecto-m6`
 
 ## 13. Qué viene después
 
