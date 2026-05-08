@@ -1,0 +1,28 @@
+services:
+  api:
+    build: .
+    image: mini-saludo:dev
+    ports:
+      - "8000:8000"
+    environment:
+      MODE: compose
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: demo
+      POSTGRES_PASSWORD: demo
+      POSTGRES_DB: demo
+    volumes:
+      - demo-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U demo"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  demo-data:
