@@ -1,0 +1,34 @@
+services:
+  api:
+    build: .
+    image: tiendapro:dev
+    ports:
+      - "8000:8000"
+    environment:
+      TIENDAPRO_DATABASE_URL: postgresql+psycopg://tienda:tienda@db:5432/tienda
+      TIENDAPRO_LOG_LEVEL: INFO
+      TIENDAPRO_DEBUG: "false"
+      TIENDAPRO_API_KEY: cambia-esto-en-prod
+      TIENDAPRO_ENABLE_ENRICHMENT: "true"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: tienda
+      POSTGRES_PASSWORD: tienda
+      POSTGRES_DB: tienda
+    ports:
+      - "5432:5432"
+    volumes:
+      - tienda-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tienda"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  tienda-data:

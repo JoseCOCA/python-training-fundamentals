@@ -6,9 +6,9 @@ Es **el mismo producto** sobre el que arranca el curso 2 ([`python-ai-engineer-t
 
 ---
 
-## Estado actual: hito M5
+## Estado actual: hito M6 — proyecto cerrado
 
-Desde el hito M5 TiendaPro Lite **es una API REST funcional**, configurable por entorno y con observabilidad básica:
+Desde el hito M6 TiendaPro Lite es **código de producción**: API REST funcional, configurable por entorno, observable, **dockerizada**, **testeada** y con historia de git limpia. Lo que tiene:
 
 - **API REST con FastAPI** (`tiendapro.api.app`): CRUD de productos + health check + filtros (`categoria`, `solo_disponibles`).
 - **Tres modelos por entidad**: ORM (`tiendapro.orm`), DTO de dominio (`tiendapro.modelos`) y DTOs de API (`tiendapro.api.dtos`). Cada uno cumple su frontera.
@@ -17,9 +17,11 @@ Desde el hito M5 TiendaPro Lite **es una API REST funcional**, configurable por 
 - **Middleware HTTP** que inyecta `X-Request-ID` y loguea método/path/status/latencia por request.
 - **Exception handlers globales** que traducen `ProductoNoEncontrado` → 404, `IntegracionError` → 502, `RequestValidationError` → 422 con formato propio, etc. Los handlers quedan **sin `try/except`**.
 - **CORS configurable** por env var (`TIENDAPRO_CORS_ORIGINS`).
+- **Dockerizada** (M6): `Dockerfile` + `docker-compose.yml` levantan la app + Postgres con `docker compose up`.
+- **Suite de tests pytest** (M6) con unit + integration y coverage >70%.
 - **mypy estricto** y **ruff** siguen pasando limpio.
 
-Lo que **todavía no tiene** y se agrega en M6:
+Recorrido completo:
 
 | Módulo | Hito | Capacidades agregadas |
 |--------|------|----------------------|
@@ -27,8 +29,8 @@ Lo que **todavía no tiene** y se agrega en M6:
 | M2 | `proyecto-m2` | Catálogo modelado con dataclasses, errores de dominio, código en paquete |
 | M3 | `proyecto-m3` | Validación pydantic, mypy estricto, ruff + pre-commit |
 | M4 | `proyecto-m4` | SQLAlchemy v2 + httpx + asyncio donde aporta |
-| **M5 (aquí estamos)** | `proyecto-m5` | API REST con FastAPI, pydantic-settings, logging estructurado |
-| M6 | `proyecto-m6` | Tests con pytest, Dockerfile, README final |
+| M5 | `proyecto-m5` | API REST con FastAPI, pydantic-settings, logging estructurado |
+| **M6 (proyecto cerrado)** | `proyecto-m6` | Tests con pytest + Dockerfile + docker-compose, README final |
 
 ---
 
@@ -45,12 +47,26 @@ uv run python main.py
 
 Imprime la tabla, el resumen y el enriquecimiento mock — útil para verificar que la persistencia y la integración HTTP siguen sanas.
 
-### Modo API (nuevo en M5)
+### Modo API local con SQLite (M5)
 
 ```bash
 cp env.example .env       # opcional — el .env está en .gitignore
 uv run uvicorn tiendapro.api:app --reload --port 8000
 ```
+
+### Modo Docker con Postgres (M6)
+
+```bash
+docker compose up --build -d        # levanta api + Postgres
+docker compose logs -f api          # tail de logs
+curl http://localhost:8000/health
+docker compose down                 # frena (conserva el volumen de datos)
+docker compose down -v              # frena y borra volumen también
+```
+
+Con compose la app apunta a Postgres real (no a SQLite) y queda accesible en `localhost:8000`. La DB queda accesible en `localhost:5432` (user `tienda`, pass `tienda`, db `tienda`) si querés conectarte con DBeaver/psql.
+
+### Endpoints (cualquier modo)
 
 Abrí:
 - `http://localhost:8000/docs` — Swagger UI interactivo.
@@ -94,24 +110,38 @@ Todas las variables se prefijan con `TIENDAPRO_` y pueden ir en `.env` o ser env
 ## Verificación de calidad
 
 ```bash
-uv run mypy src/ main.py        # cero issues
-uv run ruff check .              # cero issues
-uv run ruff format --check .     # formato correcto
+uv run mypy src/ main.py                                 # cero issues
+uv run ruff check .                                       # cero issues
+uv run ruff format --check .                              # formato correcto
+uv run pytest                                             # 36 tests verde
+uv run pytest --cov=src/tiendapro --cov-report=term       # coverage por módulo
 ```
 
-Los tres son la línea base de cualquier commit.
+Los cinco son la línea base de cualquier commit. La suite tarda ~1s en local.
 
 ## Estructura
 
 ```
 proyecto-integrador/
 ├── README.md                       ← este archivo
-├── pyproject.toml                  ← deps + tool.ruff + tool.mypy
+├── pyproject.toml                  ← deps + tool.ruff + tool.mypy + tool.pytest
 ├── env.example                     ← plantilla de variables (versionada)
+├── Dockerfile                      ← imagen de producción (M6)
+├── docker-compose.yml              ← stack: api + Postgres (M6)
+├── .dockerignore                   ← qué no entra al build context (M6)
 ├── data/
 │   └── catalogo.json               ← seed inicial (se importa una sola vez)
 ├── tiendapro.db                    ← SQLite local (no versionado)
 ├── main.py                         ← entry CLI (compatibilidad con M4)
+├── tests/                          ← suite pytest (M6)
+│   ├── conftest.py                 ← fixtures compartidas (client, producto_base)
+│   ├── unit/
+│   │   ├── test_modelos.py         ← validaciones e inmutabilidad de Producto
+│   │   ├── test_dtos.py            ← ProductoCrear, ProductoOut, HealthOut
+│   │   └── test_errores.py         ← jerarquía de excepciones
+│   └── integration/
+│       ├── test_api_productos.py   ← TestClient: GET, POST, filtros
+│       └── test_api_errores.py     ← TestClient: 422, formato de error
 └── src/
     └── tiendapro/
         ├── __init__.py             ← re-exports públicos
@@ -140,7 +170,16 @@ Cada módulo agrega una capa.
 - **M2** transformó el script en un paquete real: dataclasses inmutables, excepciones de dominio, generadores y context managers.
 - **M3** lo blindó con calidad: validación runtime con pydantic, mypy estricto, ruff y pre-commit.
 - **M4** lo conectó con el mundo: persistencia con SQLAlchemy v2, integración HTTP con httpx, asyncio donde de verdad aporta.
-- **M5 (este hito)** lo expuso como **API REST** con FastAPI: tres modelos por entidad (ORM/dominio/API), configuración por entorno con `pydantic-settings`, logging estructurado con `request_id`, exception handlers que traducen excepciones de dominio a HTTP. La API está lista para que un frontend consuma TiendaPro o para integrarse a una arquitectura más grande.
+- **M5** lo expuso como **API REST** con FastAPI: tres modelos por entidad (ORM/dominio/API), configuración por entorno con `pydantic-settings`, logging estructurado con `request_id`, exception handlers que traducen excepciones de dominio a HTTP.
+- **M6 (este hito)** sumó las **herramientas del ingeniero**: git en serio (branches, rebase, conventional commits), Docker (Dockerfile + docker-compose con Postgres), y testing (suite pytest con unit + integration, fixtures, coverage). El proyecto pasa de "API que funciona" a **código de producción**.
+
+## ¿Qué sigue?
+
+**Felicitaciones — terminaste el curso `python-training-fundamentals`.**
+
+El siguiente paso es [`python-ai-engineer-training`](https://github.com/JoseCOCA/python-ai-engineer-training). Ahí TiendaPro Lite (este mismo proyecto) deja de ser un e-commerce de juguete y se convierte en un sistema con capacidades de IA: búsqueda semántica de productos, recomendaciones por embeddings, agentes que orquestan llamadas a LLMs sobre el catálogo, RAG sobre la documentación interna.
+
+La disciplina que construiste acá — config por entorno, logs estructurados, tests, Docker, git limpio, Conventional Commits — es **el fundamento** sobre el que se va a parar todo eso. Sin ella, el código de IA es un script de demo que se rompe en producción a las 1000 requests.
 
 ## Para los alumnos
 
