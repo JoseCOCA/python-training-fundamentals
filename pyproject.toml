@@ -33,6 +33,9 @@ members = [
     "code/m05-api-fastapi/sesion-16",
     "code/m05-api-fastapi/sesion-17",
     "code/m05-api-fastapi/sesion-18",
+    "code/m06-herramientas-ingeniero/sesion-19",
+    "code/m06-herramientas-ingeniero/sesion-20",
+    "code/m06-herramientas-ingeniero/sesion-21",
 ]
 
 [tool.ruff]

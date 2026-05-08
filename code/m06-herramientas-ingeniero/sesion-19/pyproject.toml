@@ -1,0 +1,21 @@
+[project]
+name = "sesion-19"
+version = "0.1.0"
+description = "Sandbox de S19 — Git en serio (branches, rebase, conflictos, conventional commits)"
+requires-python = ">=3.12"
+dependencies = []
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "B", "UP", "RUF"]
+
+[tool.mypy]
+python_version = "3.12"
+warn_unused_ignores = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+no_implicit_optional = true
+warn_return_any = true
